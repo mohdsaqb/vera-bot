@@ -1,0 +1,55 @@
+# Keeps the deployed bot awake and warns if it stops answering.
+#
+# Render's free tier suspends an instance after roughly 15 minutes without
+# inbound traffic, and the cold start that follows has been measured at over 30
+# seconds. The challenge contract allows 2s for /v1/healthz and treats three
+# consecutive failures as a disqualification, so a sleeping instance is the one
+# failure mode that can end the evaluation regardless of how the bot behaves.
+#
+# GitHub's scheduled runs are best-effort and can be delayed when the shared
+# runners are busy, so this is a safety net rather than a guarantee. An external
+# pinger (cron-job.org, UptimeRobot) fires on time and is worth adding as well.
+name: keep-warm
+
+on:
+  schedule:
+    # Every 5 minutes: the shortest interval GitHub accepts, chosen so that a
+    # delayed run still lands inside the ~15 minute idle window.
+    - cron: "*/5 * * * *"
+  workflow_dispatch:      # so it can also be run by hand from the Actions tab
+
+permissions:
+  contents: read
+
+concurrency:
+  # A delayed run must not pile up behind a newer one.
+  group: keep-warm
+  cancel-in-progress: true
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Ping /v1/healthz
+        env:
+          BOT_URL: https://vera-bot-hc2f.onrender.com
+        run: |
+          set -uo pipefail
+          # A cold instance can take well over 30s, so allow generous time and
+          # retry: waking it up is the entire point, and the first attempt is the
+          # one expected to be slow.
+          for attempt in 1 2 3; do
+            start=$(date +%s)
+            code=$(curl -sS -m 90 -o /tmp/body -w '%{http_code}' \
+                     "$BOT_URL/v1/healthz" || echo 000)
+            elapsed=$(( $(date +%s) - start ))
+            echo "attempt $attempt: HTTP $code in ${elapsed}s"
+            if [ "$code" = "200" ]; then
+              echo "awake — $(head -c 200 /tmp/body)"
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "::error::bot did not return 200 after 3 attempts — check the Render dashboard"
+          exit 1
