@@ -108,9 +108,33 @@ class RetryOnThrottle(urllib.request.BaseHandler):
     http_error_504 = _retry
 
 
+# Free-tier rate limits are the practical ceiling on a scored run, and an
+# exhausted retry still lands in the simulator's _fallback_score() — which
+# reports 5/10 "Could not evaluate" and is easy to mistake for a real mediocre
+# score. Pacing keeps a run under the per-minute limit.
+MIN_INTERVAL_SECONDS = 3.0
+_last_request_at = 0.0
+
+
+class PaceRequests(urllib.request.BaseHandler):
+    """Space out calls to the scoring API so a run does not trip the limit."""
+
+    handler_order = 100
+
+    def default_open(self, req):
+        global _last_request_at
+        host = req.host or ""
+        if "groq.com" in host or "openai.com" in host:
+            wait = MIN_INTERVAL_SECONDS - (time.monotonic() - _last_request_at)
+            if wait > 0:
+                time.sleep(wait)
+            _last_request_at = time.monotonic()
+        return None
+
+
 def install_opener() -> None:
     """Install a User-Agent and throttle-retry for every `urllib` call."""
-    opener = urllib.request.build_opener(RetryOnThrottle())
+    opener = urllib.request.build_opener(PaceRequests(), RetryOnThrottle())
     opener.addheaders = [("User-Agent", USER_AGENT)]
     urllib.request.install_opener(opener)
 

@@ -310,7 +310,9 @@ class TestCustomerOutreach:
         result = _compose(dataset, "trg_015_winback_rashmi", now)
 
         assert "weight loss" in result.body
-        assert "8 weeks" in result.body
+        # The exact figure from trigger.payload.days_since_last_visit, not a
+        # rounded "about 8 weeks" — the gap is the fact, so it is stated precisely.
+        assert "57 days" in result.body
         assert result.cta == "binary_yes_no"
 
     def test_no_merchant_analytics_leak_to_a_customer(self, dataset, now):

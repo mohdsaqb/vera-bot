@@ -64,7 +64,10 @@ _LANGUAGE_NOTES: dict[str, str] = {
     render.LANG_EN: "Write in English.",
     render.LANG_HI_EN: (
         "Write in natural Hindi-English code-mix, the way Indian merchants "
-        "actually text: keep numbers, metric names and citations in English."
+        "actually text, in Latin script — never Devanagari. State the facts in "
+        "English: numbers, metric names, dates, regulations, proper nouns and "
+        "citations stay exactly as given, in an English sentence. Hindi carries "
+        "the ask and the connective tissue, not the facts."
     ),
 }
 

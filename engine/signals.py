@@ -724,8 +724,14 @@ def trigger_payload_signal(
     if family == "listing" and payload.get("verified") is False:
         uplift = payload.get("estimated_uplift_pct")
         text = "your Google listing is unverified"
+        # The uplift is the number that makes this worth acting on; without it the
+        # fact is a status with nothing quantified, which reads as generic advice.
+        # The verification path is logistics and belongs in the effort note, so it
+        # only joins the fact when there is no uplift figure to lead with.
         path = payload.get("verification_path")
-        if isinstance(path, str) and path:
+        if isinstance(uplift, (int, float)) and uplift:
+            text += f", and verifying it is worth about {fmt.pct(float(uplift))} more views"
+        elif isinstance(path, str) and path:
             text += f"; verification is by {path.replace('_', ' ')}"
         return Signal(
             kind="listing_unverified",
@@ -831,8 +837,10 @@ def trigger_payload_signal(
         days = payload.get("days_since_last_visit")
         focus = payload.get("previous_focus")
         if isinstance(days, int):
-            weeks = days // 7
-            text = f"it has been about {weeks} weeks since your last visit"
+            # Exact days, not "about N weeks". The payload carries the precise
+            # figure and a hedged round number reads as a form letter; the point
+            # of the fact is that we know when they were last in.
+            text = f"it has been {days} days since your last visit"
             if isinstance(focus, str) and focus:
                 text += f", when you were working on {focus.replace('_', ' ')}"
             return Signal(
@@ -1004,7 +1012,15 @@ def customer_relationship_signal(
 _FALLBACK_CHAIN: dict[str, tuple[str, ...]] = {
     "performance": ("delta", "peer_gap"),
     "listing": ("listing", "peer_gap"),
-    "reengagement": ("dormancy", "delta", "peer_gap"),
+    # Dormancy is deliberately last. "It has been N days since your last message
+    # to me" is a fact about Vera's own inbox, not about the merchant's business,
+    # so it justifies the timing but anchors nothing the merchant can act on;
+    # it still reaches the message as the supporting "why now".
+    # The peer benchmark leads rather than the subscription state: a merchant who
+    # has gone quiet is usually one we last spoke to about their lapsed plan, and
+    # leading on the plan again restates a story they have already been told. The
+    # peer gap is the fact they have not heard.
+    "reengagement": ("peer_gap", "delta", "dormancy"),
     "curiosity": ("delta", "peer_gap", "review_pos", "customer_base"),
     "account": ("subscription", "delta"),
     "reputation": ("review_neg",),
