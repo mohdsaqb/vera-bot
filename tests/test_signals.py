@@ -1,4 +1,4 @@
-"""Signal extraction: which single fact the engine chooses, and how it is worded."""
+"""Signal extraction, which single fact the engine chooses, and how it is worded."""
 
 from __future__ import annotations
 

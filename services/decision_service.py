@@ -6,7 +6,7 @@ triggers, applies the per-tick sending discipline and returns actions in the
 judge's shape.
 
 Sending discipline (challenge-testing-brief.md §5 and §10, and the FAQ):
-  * at most one action per merchant per tick — several stories may qualify, but
+  * at most one action per merchant per tick: several stories may qualify, but
     the merchant gets the strongest one and the rest wait for a later tick;
   * at most `MAX_ACTIONS_PER_TICK` actions in total;
   * nothing already sent under the same suppression key, unless the context it
@@ -16,7 +16,7 @@ Sending discipline (challenge-testing-brief.md §5 and §10, and the FAQ):
 
 Every decision reads the contexts out of the store at the moment it is made, so a
 version pushed between two ticks is used by the second one. Nothing is cached
-here — the store is the only copy.
+here: the store is the only copy.
 
 Wording is delegated to the configured writer under a per-tick budget: `/v1/tick`
 has a 10-second latency budget, so the first few messages are generated and the
@@ -25,7 +25,7 @@ rest render deterministically rather than risking the whole tick.
 Every action opens (or continues) a conversation, so the reply that comes back
 lands on a thread that knows what it was about.
 
-No decision logic lives here — that is `engine/`; this is resolution, ordering
+No decision logic lives here: that is `engine/`; this is resolution, ordering
 and bookkeeping.
 """
 
@@ -125,7 +125,7 @@ class DecisionService:
 
         Expiry only means something relative to the timeline the triggers live on.
         The dataset's events run from April to December 2026, and the tick's `now`
-        is normally on that timeline — but `judge_simulator.py` sends the machine's
+        is normally on that timeline: but `judge_simulator.py` sends the machine's
         wall clock, which can sit outside it entirely. Taking that literally would
         expire every trigger at once and answer every tick with silence.
 
@@ -133,17 +133,16 @@ class DecisionService:
         than as genuinely lapsed events, because the difference matters and a
         single data point cannot tell them apart:
 
-          * more than one trigger carries an expiry — one expired trigger is an
+          * more than one trigger carries an expiry: one expired trigger is an
             expired trigger, not evidence about a calendar;
-          * every one of them lapsed more than `OFF_TIMELINE_DAYS` ago — events
+          * every one of them lapsed more than `OFF_TIMELINE_DAYS` ago: events
             decaying over days is ordinary, a whole queue lapsing months ago is a
             different timeline.
 
         When both hold, time-based judgements are withheld for the tick rather than
         guessed at: the engine already handles a missing reference time by skipping
         expiry and elapsed-day reasoning and using neutral time pressure. Every
-        other tick keeps strict per-trigger expiry, which is the case that matters —
-        an expired trigger inside a live set is still dropped.
+        other tick keeps strict per-trigger expiry, which is the case that matters: an expired trigger inside a live set is still dropped.
         """
         if now is None:
             return None
@@ -173,7 +172,7 @@ class DecisionService:
     ) -> list[tuple[TriggerEvaluation, NormalizedTrigger]]:
         """Evaluate every available trigger, best-first.
 
-        Unknown ids are skipped rather than failing the tick — the judge may name
+        Unknown ids are skipped rather than failing the tick: the judge may name
         a trigger whose context has not been pushed yet.
         """
         evaluations: list[TriggerEvaluation] = []

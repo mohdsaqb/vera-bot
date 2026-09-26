@@ -1,6 +1,6 @@
 """Turn raw context JSON into the normalized dataclasses in `types.py`.
 
-Only fields that actually exist in the challenge dataset are read — the field
+Only fields that actually exist in the challenge dataset are read: the field
 names here were taken from `dataset/categories/*.json`,
 `dataset/merchants_seed.json`, `dataset/customers_seed.json` and
 `dataset/triggers_seed.json`, plus the generated variants written by
@@ -75,7 +75,7 @@ def _dict_tuple(values: list[Any]) -> tuple[dict[str, Any], ...]:
 def parse_iso(value: Any) -> datetime | None:
     """Parse an ISO-8601 timestamp or date into an aware UTC datetime.
 
-    Returns None for anything unparseable — timestamps arrive from the judge and
+    Returns None for anything unparseable: timestamps arrive from the judge and
     from payloads in several shapes ("2026-11-12", "2026-04-28T00:00:00+05:30",
     "2026-05-03T00:00:00Z"), and an odd one must never break a decision.
     """
@@ -134,8 +134,8 @@ def infer_offer_type(title: str, declared: str = "") -> str:
 def parse_signal_values(signals: tuple[str, ...]) -> dict[str, Any]:
     """Pull numbers out of the merchant's derived-signal strings.
 
-    The dataset encodes them two ways — "stale_posts:22d" and
-    "dormant_with_vera_14d" — so both forms are decoded into
+    The dataset encodes them two ways, "stale_posts:22d" and
+    "dormant_with_vera_14d", so both forms are decoded into
     `{"stale_posts": 22, "dormant_with_vera": 14}`. Flags without a number are
     recorded as True so callers can test presence uniformly.
     """

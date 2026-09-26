@@ -32,8 +32,8 @@ logger = logging.getLogger("vera.reply")
 # End reasons that silence the merchant rather than the thread.
 # api-call-examples.md §2.6 suppresses "this conversation_id" for a plain refusal;
 # §4.3 suppresses "all triggers for this merchant" for a hostile exit. Treating a
-# refusal as the second kind would stop every other story — including
-# customer-facing ones — over one declined offer.
+# refusal as the second kind would stop every other story: including
+# customer-facing ones: over one declined offer.
 MERCHANT_WIDE_END_REASONS = frozenset({"opted_out", "hostile"})
 
 

@@ -73,7 +73,7 @@ def get_reply_service() -> ReplyService:
 def llm_status() -> dict[str, object]:
     """Whether the wording layer is live, for logs and `/v1/healthz`.
 
-    Reports the configured model name but never the key — there is no code path
+    Reports the configured model name but never the key: there is no code path
     from the key to a response body.
     """
     settings = get_settings()

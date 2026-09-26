@@ -2,7 +2,7 @@
 
 Nothing a writer produces is trusted. Every body is checked against the
 `GenerationBrief` it was written from, and a body that fails any check is
-discarded in favour of the deterministic rendering — the engine never repairs a
+discarded in favour of the deterministic rendering: the engine never repairs a
 bad generation, and never asks a second model to grade the first.
 
 The checks, in the order they run:
@@ -23,7 +23,7 @@ The checks, in the order they run:
 
 Grounding is checked by containment rather than by meaning: a figure is
 acceptable only if that exact figure is in the brief. That is blunt, and it is
-the point — it cannot be talked around.
+the point: it cannot be talked around.
 """
 
 from __future__ import annotations
@@ -64,8 +64,8 @@ _REQUEST_RE = re.compile(
 )
 # Action verbs, used to catch one question carrying several asks
 # ("activate it and update your listing?"). Only words that read as verbs in this
-# domain: "post" is excluded because it is almost always the object — "draft a
-# post", "post draft kar dun" — and counting it would flag one action as two.
+# domain: "post" is excluded because it is almost always the object: "draft a
+# post", "post draft kar dun", and counting it would flag one action as two.
 _ACTION_VERBS = (
     "activate", "update", "draft", "send", "publish", "launch", "change",
     "pull", "book", "verify", "renew", "schedule", "set up",
@@ -154,8 +154,8 @@ def _canonical_noun(word: str) -> str:
 
     Two differences are spelling, not invention, and folding them prevents a
     faithful rewording from being thrown away:
-      * a possessive — "JIDA's" is the "JIDA" the brief cited;
-      * a month written out — "October" is the "Oct" in a source line.
+      * a possessive, "JIDA's" is the "JIDA" the brief cited;
+      * a month written out, "October" is the "Oct" in a source line.
     """
     stripped = _POSSESSIVE_RE.sub("", word).lower()
     if stripped in _FULL_MONTHS or stripped[:3] in _MONTHS:

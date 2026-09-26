@@ -6,15 +6,15 @@ what came back, and where the thread stands. In-memory and process-level, like
 the context store: the test window is one process and the privacy rule forbids
 keeping any of it afterwards.
 
-`ConversationState` itself lives in `engine/types.py` — it is a domain type the
+`ConversationState` itself lives in `engine/types.py`: it is a domain type the
 decision layer reasons about, and keeping it there stops `engine/` having to
 import a service.
 
 Two counters deserve explanation:
 
-* `consecutive_auto_replies` — how many machine replies have arrived in a row on
+* `consecutive_auto_replies`: how many machine replies have arrived in a row on
   this thread, which is what decides between nudging, backing off and closing.
-* per-merchant auto-reply totals — the same phone answers every thread, so a
+* per-merchant auto-reply totals: the same phone answers every thread, so a
   merchant whose WhatsApp Business auto-reply is on will produce canned text
   across several conversation ids. `judge_simulator.py` does exactly that, using
   a fresh conversation id for each of its four canned turns, so counting only
@@ -56,8 +56,8 @@ class ConversationStore:
     ) -> ConversationState:
         """Return the thread, opening it if the judge got there first.
 
-        `/v1/reply` can name a conversation the bot never opened — the replay
-        scenarios do — so an unknown id is a new thread rather than an error.
+        `/v1/reply` can name a conversation the bot never opened, the replay
+        scenarios do, so an unknown id is a new thread rather than an error.
         """
         with self._lock:
             existing = self._conversations.get(conversation_id)

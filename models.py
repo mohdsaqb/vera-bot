@@ -26,7 +26,7 @@ ReplyAction = Literal["send", "wait", "end"]
 # POST /v1/context
 # --------------------------------------------------------------------------- #
 class ContextPush(BaseModel):
-    """Body of `POST /v1/context` — one versioned context object."""
+    """Body of `POST /v1/context`: one versioned context object."""
 
     # Tolerate extra envelope keys so a future judge field never 400s a push.
     model_config = ConfigDict(extra="allow")
@@ -105,7 +105,7 @@ class TickRequest(BaseModel):
 class TickAction(BaseModel):
     """One proactive outbound message.
 
-    Every field here is required by the judge's action schema — omitting any of
+    Every field here is required by the judge's action schema: omitting any of
     them costs a malformed-action penalty (see api-call-examples.md F.2).
     Phase 2 fills these in; Phase 1 never emits an action.
     """

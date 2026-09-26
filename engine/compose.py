@@ -1,4 +1,4 @@
-"""`compose()` — the public entry point of the decision engine.
+"""`compose()`: the public entry point of the decision engine.
 
 Pipeline, in order:
 
@@ -12,8 +12,7 @@ no randomness, no I/O, no model call. The same inputs always produce the same
 
 Wording is the one stage that may be delegated. Pass a `writer` and the body is
 generated from the plan's `GenerationBrief`, validated against it, and replaced
-by the deterministic rendering if anything fails. With no writer — the default —
-`compose()` performs no I/O at all and stays byte-for-byte reproducible.
+by the deterministic rendering if anything fails. With no writer, the default, `compose()` performs no I/O at all and stays byte-for-byte reproducible.
 
 What a writer can change: how the body reads.
 What it can never change: the trigger, the signal, the offer, the action, the
@@ -101,7 +100,7 @@ def build_plan(
     offer = select_offer(category, merchant, trigger, customer)
     if offer is not None and not offer.is_existing and trigger.scope == "customer":
         # A catalog pattern is a proposal to the merchant, not something a
-        # customer can take up — it is not live for this business.
+        # customer can take up: it is not live for this business.
         offer = None
     action = select_action(trigger, merchant, customer, primary, offer)
     send_as = select_send_as(trigger, customer)
@@ -168,8 +167,8 @@ def build_rationale(plan: MessagePlan) -> str:
     """Explain the decision, not the message.
 
     The judge cross-checks the rationale against the body, so this records what
-    was chosen and why — the signal, its provenance, the offer's origin and the
-    single ask — rather than restating the copy.
+    was chosen and why, the signal, its provenance, the offer's origin and the
+    single ask, rather than restating the copy.
     """
     parts = [
         f"Chose {plan.trigger_kind} (urgency {plan.urgency}, priority {plan.priority:.2f}) "
@@ -247,7 +246,7 @@ def compose(
     Args:
         category: CategoryContext payload, as stored from `/v1/context`.
         merchant: MerchantContext payload.
-        trigger: TriggerContext payload — supplies the "why now".
+        trigger: TriggerContext payload: supplies the "why now".
         customer: CustomerContext payload, for customer-scoped triggers only.
         now: reference time for expiry and elapsed-day reasoning. Optional by
             design: without it the engine skips time-dependent judgements rather

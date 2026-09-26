@@ -24,7 +24,7 @@ from services.suppression import SuppressionLedger
 from state import get_context_store, get_suppression_ledger, reset_state
 
 # Variables that change how the code behaves rather than what it says. A developer
-# with a real `.env` — which anyone who has deployed will have — would otherwise be
+# with a real `.env`, which anyone who has deployed will have, would otherwise be
 # running a different suite from CI: `build_writer()` would return an LLMWriter, and
 # the reasoning defaults would already be populated. Tests that want a provider
 # configure one explicitly by constructing `Settings(...)`.
@@ -185,8 +185,7 @@ def ledger() -> SuppressionLedger:
 def variant(_context: dict[str, Any], **overrides: Any) -> dict[str, Any]:
     """Deep copy of a context payload with top-level keys replaced.
 
-    The positional name is underscored so `payload=` can itself be overridden —
-    trigger contexts have a field by that name.
+    The positional name is underscored so `payload=` can itself be overridden: trigger contexts have a field by that name.
     """
     clone = copy.deepcopy(_context)
     clone.update(copy.deepcopy(overrides))
@@ -216,7 +215,7 @@ class FakeWriter:
 
     `bodies` are returned in order, one per call; `raises` makes the call blow up
     so the fallback path can be exercised. Records every brief it was handed, so
-    a test can assert what the writer was — and was not — allowed to see.
+    a test can assert what the writer was, and was not, allowed to see.
     """
 
     bodies: list[str] = field(default_factory=list)

@@ -98,7 +98,7 @@ def open_thread(conversations):
 
 
 # --------------------------------------------------------------------------- #
-# Accept — the intent transition
+# Accept: the intent transition
 # --------------------------------------------------------------------------- #
 class TestAccept:
     @pytest.mark.parametrize(
@@ -320,7 +320,7 @@ class TestOffTopic:
 
 
 # --------------------------------------------------------------------------- #
-# Auto-reply — the replay scenario
+# Auto-reply: the replay scenario
 # --------------------------------------------------------------------------- #
 class TestAutoReply:
     def test_the_first_canned_reply_gets_one_prompt_for_the_owner(self, service, open_thread):

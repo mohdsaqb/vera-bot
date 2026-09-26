@@ -4,7 +4,7 @@ Everything here goes through `TestClient` rather than calling helpers directly,
 because the judge only ever sees the endpoints. Covered:
 
   * version handling for all four scopes, end to end
-  * adaptive context injection — a newer version changes what the next tick says
+  * adaptive context injection: a newer version changes what the next tick says
   * trigger lifecycle: expiry, completion, freshness
   * competing triggers, ranking and the per-tick action cap
   * suppression: same story held, new story allowed, refreshed context resent
@@ -35,7 +35,7 @@ class TestVersionHandling:
          ("customer", "c_001_priya_for_m001"), ("trigger", PERF_DIP)],
     )
     def test_the_full_version_sequence(self, client, dataset, scope, context_id_key):
-        """A, A again, 0, B, B again — for every scope the judge pushes."""
+        """A, A again, 0, B, B again: for every scope the judge pushes."""
         payloads = {
             "category": dataset.categories.get("dentists"),
             "merchant": dataset.merchants.get(BHARAT),
@@ -148,7 +148,7 @@ class TestAdaptiveContext:
         assert "Aligner Consultation" not in second[0]["body"]
         assert second[0]["body"] != first[0]["body"]
         # The dip figure still comes from the trigger payload, which was not
-        # re-pushed — the merchant snapshot is not the "why now" for this family.
+        # re-pushed: the merchant snapshot is not the "why now" for this family.
         assert "50%" in second[0]["body"]
 
     def test_a_customer_state_change_is_respected(self, client, dataset):
@@ -241,7 +241,7 @@ class TestReferenceTime:
         assert actions[0]["body"].strip()
 
     def test_withholding_does_not_weaken_the_other_decisions(self, client, dataset):
-        """Only time judgement is withheld — everything else still applies."""
+        """Only time judgement is withheld: everything else still applies."""
         load_contexts(client, dataset, self.ALL_DENTIST + ["trg_019_chronic_refill_grandfather"])
 
         actions = tick_now(

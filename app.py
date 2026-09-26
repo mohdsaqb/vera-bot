@@ -100,7 +100,7 @@ def _rejected(response: ContextRejected, http_status: int) -> JSONResponse:
 def _summarise_errors(errors: Sequence[Mapping[str, Any]]) -> str:
     """Field-level summary of validation failures.
 
-    Only locations and messages are included — never the submitted values, so
+    Only locations and messages are included: never the submitted values, so
     merchant/customer payload data can never leak into a response or a log.
     """
     parts = []
@@ -110,15 +110,31 @@ def _summarise_errors(errors: Sequence[Mapping[str, Any]]) -> str:
     return "; ".join(parts) or "invalid request body"
 
 
+# Dataset context payloads are a few KB, so anything far larger is a mistake or an
+# attempt to exhaust a small instance. Checking the declared length rejects it
+# before the body is buffered; a chunked request without Content-Length slips past
+# this, which is proportionate for an endpoint reached only by the judge harness.
+MAX_BODY_BYTES = 1_048_576
+
+
 @app.middleware("http")
 async def log_requests(request: Request, call_next):
     """One line per request: method, path, status, latency.
 
-    Deliberately narrow — no bodies, no headers, no query strings. Merchant and
+    Deliberately narrow: no bodies, no headers, no query strings. Merchant and
     customer payloads pass through these endpoints and an access log is not the
     place for them; the identifiers that matter are already logged by the handlers
     that act on them.
     """
+    declared = request.headers.get("content-length")
+    if declared and declared.isdigit() and int(declared) > MAX_BODY_BYTES:
+        logger.warning("rejected %s %s: body %s bytes exceeds limit",
+                       request.method, request.url.path, declared)
+        return JSONResponse(
+            status_code=413,
+            content={"error": "payload_too_large",
+                     "details": f"request body must be under {MAX_BODY_BYTES} bytes"},
+        )
     started = time.perf_counter()
     try:
         response = await call_next(request)
@@ -145,7 +161,7 @@ async def handle_unexpected_error(request: Request, exc: Exception) -> JSONRespo
 
     The judge scores a malformed response and penalises a timeout, so an
     unhandled fault must still produce a well-formed body. The traceback goes to
-    the server log in full — this catches the response, it does not hide the bug.
+    the server log in full: this catches the response, it does not hide the bug.
     """
     logger.exception(
         "unhandled error on %s %s (%s)",
@@ -187,17 +203,15 @@ async def handle_validation_error(
 
 
 # --------------------------------------------------------------------------- #
-# GET / — signpost only
+# GET /: signpost only
 # --------------------------------------------------------------------------- #
 @app.get("/", include_in_schema=False)
 async def root() -> dict[str, object]:
     """Name the service and list its endpoints.
 
-    The contract defines nothing at the root, and the judge appends each path to
-    the base URL, so nothing depends on this. It exists because the submitted
-    link IS the base URL: a person who opens it in a browser would otherwise get
-    a bare 404 and reasonably conclude the deployment was broken. No state is
-    touched and no secret is read.
+    The contract defines nothing here and the judge appends each path to the base
+    URL, so nothing depends on this. It exists because the submitted link is the
+    base URL, and a bare 404 reads as a broken deployment to anyone who opens it.
     """
     return {
         "service": "vera",
@@ -218,7 +232,7 @@ async def root() -> dict[str, object]:
 # --------------------------------------------------------------------------- #
 @app.get("/v1/healthz", response_model=HealthResponse)
 async def healthz() -> HealthResponse:
-    """Liveness probe. Pure in-memory reads — no LLM, no database, no I/O.
+    """Liveness probe. Pure in-memory reads: no LLM, no database, no I/O.
 
     The judge polls this every 60s and compares `contexts_loaded` against what
     it pushed during warmup, so the counts must reflect the store exactly.
@@ -259,7 +273,7 @@ async def push_context(body: ContextPush) -> JSONResponse:
     the wire contract:
 
       * 200 + ack when the push is stored, and also when it repeats a version
-        already held with identical content — a retry has to read as success,
+        already held with identical content: a retry has to read as success,
         since the judge's warmup check treats any `accepted: false` as a failed
         warmup;
       * 409 + `stale_version` when an older version arrives, or when the same
@@ -308,7 +322,7 @@ async def tick(body: TickRequest) -> TickResponse:
     against the stored contexts, the engine decides and composes, the wording
     layer words it, and the suppression ledger keeps a story from being told
     twice. Every action opens or continues a conversation so the reply that comes
-    back has context. An empty list is a valid, and often correct, answer — the
+    back has context. An empty list is a valid, and often correct, answer: the
     challenge rewards restraint.
     """
     actions = get_decision_service().actions(body.available_triggers, body.now)
@@ -329,7 +343,7 @@ async def reply(body: ReplyRequest) -> ReplyResponse:
     The intent is classified and the action decided deterministically
     (`engine/intent.py`, `engine/reply.py`); wording may be generated, and falls
     back to the deterministic draft on any problem. A conversation the bot never
-    opened is treated as a new thread rather than an error — the judge's replay
+    opened is treated as a new thread rather than an error: the judge's replay
     scenarios post into ids of their own.
     """
     outcome = get_reply_service().handle(

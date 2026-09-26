@@ -103,8 +103,7 @@ class TestReject:
     def test_a_refusal_silences_the_story_not_the_merchant(self, client, dataset, thread):
         """§2.6 suppresses the conversation; §4.3 suppresses the merchant.
 
-        Conflating them stops every other story — including customer-facing ones —
-        over one declined offer.
+        Conflating them stops every other story, including customer-facing ones,         over one declined offer.
         """
         reply_to(client, thread["conversation_id"], "Not interested", merchant_id=BHARAT)
 

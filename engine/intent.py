@@ -2,13 +2,12 @@
 
 No model is involved: intent decides what the bot does next, and that decision
 stays in Python. Keyword and shape rules are applied in a fixed precedence,
-because the same words mean different things depending on what else is present —
-"yes, but not now" is a delay, not an acceptance, and "thank you for contacting
+because the same words mean different things depending on what else is present: "yes, but not now" is a delay, not an acceptance, and "thank you for contacting
 us" is a machine, not a person.
 
 Precedence, highest first:
 
-    auto_reply      a canned business auto-response — a person did not write it
+    auto_reply      a canned business auto-response: a person did not write it
     hostile         abuse or an explicit demand to stop
     reject          a clear no
     delay           a yes-later
@@ -174,7 +173,7 @@ _QUESTION_PATTERNS: tuple[str, ...] = (
 )
 
 # A leading interrogative counts only when the message is punctuated as a
-# question — "do it now" is an instruction that happens to start with "do".
+# question: "do it now" is an instruction that happens to start with "do".
 _LEADING_INTERROGATIVE_RE = re.compile(
     r"^\s*(?:how|what|why|when|where|which|who|can|could|do|does|is|are|will"
     r"|would|should)\b",
@@ -210,7 +209,7 @@ _COMPILED: dict[str, tuple[re.Pattern[str], ...]] = {
 }
 
 # Order matters: the first family that matches wins. Subject matter is placed
-# above question shape — "can you do my GST?" needs redirecting, not answering.
+# above question shape: "can you do my GST?" needs redirecting, not answering.
 _PRECEDENCE: tuple[str, ...] = (
     AUTO_REPLY, HOSTILE, REJECT, DELAY, OFF_TOPIC, QUESTION, ACTION_REQUEST, ACCEPT,
 )
@@ -271,7 +270,7 @@ def classify_reply(
     is_question = text.endswith("?")
     follows_through = bool(_FOLLOW_THROUGH_RE.search(text))
 
-    # "Ok, let's do it — what's next?" is a commitment that asks how to proceed,
+    # "Ok, let's do it: what's next?" is a commitment that asks how to proceed,
     # not a question instead of a commitment. Checked ahead of precedence because
     # the follow-through half would otherwise classify as a plain question, which
     # is the intent-handoff failure the brief names.
@@ -294,8 +293,8 @@ def classify_reply(
             match = pattern.search(text)
             if not match:
                 continue
-            # A question mark normally outranks a bare keyword — "activate it?"
-            # is asking, not instructing — except when the question is asking how
+            # A question mark normally outranks a bare keyword: "activate it?"
+            # is asking, not instructing: except when the question is asking how
             # to proceed, which is part of the commitment, not a substitute for
             # it. Rejection, hostility and subject matter are never softened.
             if is_question and not follows_through and intent in {ACTION_REQUEST, ACCEPT}:

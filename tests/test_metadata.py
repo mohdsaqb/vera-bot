@@ -1,4 +1,4 @@
-"""GET /v1/metadata — bot identity."""
+"""GET /v1/metadata: bot identity."""
 
 from __future__ import annotations
 

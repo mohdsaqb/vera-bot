@@ -52,7 +52,7 @@ def _env_list(name: str, default: list[str]) -> list[str]:
 class Settings:
     """Immutable view of the process configuration.
 
-    Only non-secret, publicly reportable values live here — `/v1/metadata`
+    Only non-secret, publicly reportable values live here: `/v1/metadata`
     serialises most of them, so nothing sensitive may be added.
     """
 
@@ -90,9 +90,9 @@ class Settings:
     llm_structured_method: str = "json_schema"
     # Reasoning models (openai/gpt-oss, qwen) spend tokens thinking before they
     # answer. Both are sent only when set, so a non-reasoning model is unaffected:
-    #   effort — "low" keeps latency and token spend down; the wording task needs
+    #   effort: "low" keeps latency and token spend down; the wording task needs
     #            no deliberation, the decision is already made.
-    #   format — "hidden" keeps the reasoning out of the returned content.
+    #   format: "hidden" keeps the reasoning out of the returned content.
     llm_reasoning_effort: str = "low"
     llm_reasoning_format: str = "hidden"
     # Per-tick ceiling: `/v1/tick` has a 10 s budget and may produce up to 20

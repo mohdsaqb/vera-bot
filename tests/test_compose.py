@@ -1,4 +1,4 @@
-"""`compose()` end to end — the A-O scenario matrix from the phase brief.
+"""`compose()` end to end: the A-O scenario matrix from the phase brief.
 
 Each test names the behaviour it pins rather than a specific sentence, so the
 wording can improve without the suite needing edits; what is asserted is that
@@ -311,7 +311,7 @@ class TestCustomerOutreach:
 
         assert "weight loss" in result.body
         # The exact figure from trigger.payload.days_since_last_visit, not a
-        # rounded "about 8 weeks" — the gap is the fact, so it is stated precisely.
+        # rounded "about 8 weeks": the gap is the fact, so it is stated precisely.
         assert "57 days" in result.body
         assert result.cta == "binary_yes_no"
 

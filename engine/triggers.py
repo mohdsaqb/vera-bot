@@ -1,6 +1,6 @@
 """Trigger evaluation: should Vera speak now, and about which trigger?
 
-`evaluate_trigger` answers two things at once — whether a trigger is eligible at
+`evaluate_trigger` answers two things at once: whether a trigger is eligible at
 all (expiry, category meaning, whether the merchant's data backs its claim,
 consent when a customer is involved), and how strongly it competes for the
 merchant's attention. `rank_triggers` orders a queue deterministically.
@@ -71,8 +71,8 @@ def merchant_relevance_score(
 ) -> tuple[float, str]:
     """Does the merchant's own state back this trigger's claim?
 
-    Returns (score, note). A score of 0.0 means contradicted — the merchant data
-    says the opposite of the trigger — and the caller treats that as a hard block
+    Returns (score, note). A score of 0.0 means contradicted, the merchant data
+    says the opposite of the trigger, and the caller treats that as a hard block
     rather than a low rank, because sending it would mean asserting something the
     merchant can check and find false.
     """
@@ -183,7 +183,7 @@ def merchant_relevance_score(
         return 0.4, "season named without demand detail"
 
     if kind == "curious_ask_due":
-        # The curiosity family needs no payload facts — it asks the merchant a
+        # The curiosity family needs no payload facts: it asks the merchant a
         # question. It only needs a merchant worth asking and a live channel.
         return 1.0, "curious ask needs no payload facts"
 
@@ -198,7 +198,7 @@ def time_pressure_score(trigger: NormalizedTrigger, now: Any = None) -> tuple[fl
     """How much the closing window justifies interrupting now.
 
     Without a `now` from the caller there is no defensible way to compute
-    elapsed time, so this returns a neutral score rather than guessing — the
+    elapsed time, so this returns a neutral score rather than guessing: the
     challenge is explicit that the current clock must not be assumed.
     """
     if now is None:
@@ -229,7 +229,7 @@ def _event_is_too_distant(trigger: NormalizedTrigger) -> tuple[bool, str]:
     """True for a dated event too far away to prepare for right now.
 
     A payload that names an open preparation window (the bridal trigger's
-    `next_step_window_open`) is actionable however far the event is — that field
+    `next_step_window_open`) is actionable however far the event is: that field
     is the dataset saying "the window is now".
     """
     if trigger.payload.get("next_step_window_open"):
@@ -248,7 +248,7 @@ def customer_state_check(
 
     `customer.state` is the dataset's own read on the relationship. A winback
     aimed at someone marked "active", or a trial follow-up for a long-standing
-    member, is the trigger being wrong about the person — and acting on it would
+    member, is the trigger being wrong about the person: and acting on it would
     mean telling a customer something their own record contradicts.
     """
     if trigger.scope != "customer" or customer is None or not customer.state:

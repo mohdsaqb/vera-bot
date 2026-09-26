@@ -78,7 +78,7 @@ def select_action(
     Customer-facing families ask the customer to take up something concrete
     (a slot, a dispatch); merchant-facing families ask the merchant to approve
     work Vera has already framed, which is the "effort externalization" lever.
-    Every ask names its object — a bare "want me to draft it?" gives the reader
+    Every ask names its object: a bare "want me to draft it?" gives the reader
     nothing to picture.
     """
     family = policy.family_for(trigger.kind)
@@ -303,7 +303,7 @@ def make_suppression_key(
     it back on the action, and re-deriving it would risk two keys for one story.
 
     When it is absent the key is synthesised from the dimensions that make a
-    story distinct — family, recipient, action and a time bucket — so the same
+    story distinct, family, recipient, action and a time bucket, so the same
     logical message always produces the same key, and two genuinely different
     events never collide.
     """

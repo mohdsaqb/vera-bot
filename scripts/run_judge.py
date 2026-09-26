@@ -4,7 +4,7 @@
 `judge_simulator.py` hand-rolls its HTTP with `urllib`, which sends
 `User-Agent: Python-urllib/3.x`. Groq's edge (Cloudflare) rejects that fingerprint
 with `403 error code: 1010` before the request ever reaches the API, so the
-simulator's own scorer cannot connect — the key and the model are fine, and the
+simulator's own scorer cannot connect: the key and the model are fine, and the
 bot itself is unaffected because it talks to Groq through httpx.
 
 This runner installs a normal User-Agent for `urllib` and then hands control to the
@@ -42,18 +42,13 @@ USER_AGENT = (
     "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
 )
 
-# The simulator fires its scoring calls back to back with no pacing, which trips a
-# free-tier rate limit: it then silently falls back to counting digits and awards
-# 5/10 on the four judged dimensions with the reason "Could not evaluate". Those
-# placeholder scores are indistinguishable from real ones in the summary, so a
-# throttled run reads as a mediocre bot rather than an unscored one.
-#
-# Retrying a 429 is ordinary HTTP client behaviour and touches nothing about the
-# evaluation — same request, same key, same payload, same scoring prompt, just not
-# abandoned on the first refusal.
+# The simulator paces nothing, so a free-tier 429 sends it into _fallback_score():
+# 5/10 on four dimensions with "Could not evaluate", indistinguishable from a real
+# score in the summary. Retrying is ordinary client behaviour and changes nothing
+# about the evaluation.
 RETRY_STATUSES = frozenset({429, 500, 502, 503, 504})
 # 503 from a hosted scorer is provider capacity, not a quota problem, and it
-# clears on its own — so be patient rather than falling through to
+# clears on its own, so be patient rather than falling through to
 # _fallback_score(), whose placeholder 5/10s look like real scores.
 MAX_RETRIES = 6
 BASE_BACKOFF_SECONDS = 4.0
@@ -76,7 +71,7 @@ class RetryOnThrottle(urllib.request.BaseHandler):
 
     `Retry-After` is honoured when the server sends it; otherwise the wait grows
     exponentially. Applies to every `urllib` call in the process, which in practice
-    means the scorer — the bot's own endpoints are not rate limited.
+    means the scorer: the bot's own endpoints are not rate limited.
     """
 
     # Runs before the default error handler, which would raise.
@@ -118,7 +113,7 @@ class RetryOnThrottle(urllib.request.BaseHandler):
 
 
 # Free-tier rate limits are the practical ceiling on a scored run, and an
-# exhausted retry still lands in the simulator's _fallback_score() — which
+# exhausted retry still lands in the simulator's _fallback_score(), which
 # reports 5/10 "Could not evaluate" and is easy to mistake for a real mediocre
 # score. Pacing keeps a run under the per-minute limit.
 _PACED_HOSTS = (
@@ -128,7 +123,7 @@ _PACED_HOSTS = (
 # The bot and the scorer share one 8,000 tokens/min key: the bot spends ~1,100
 # per wording call and takes up to six per tick, while a scoring call needs
 # ~1,800. At any tighter spacing the two compete for the same bucket and the
-# scorer loses, falling through to _fallback_score() — whose placeholder 5/10s
+# scorer loses, falling through to _fallback_score(): whose placeholder 5/10s
 # are indistinguishable from real ones. A full minute lets the bucket refill.
 # Override with JUDGE_MIN_INTERVAL=3 once the scorer has a key of its own.
 MIN_INTERVAL_SECONDS = float(os.environ.get("JUDGE_MIN_INTERVAL", "60"))

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Post-deployment smoke test: drive a running Vera against the real contract.
 
-Runs the whole judge-shaped flow — warmup, tick, reply, suppression, a version
-bump, the reply families, audience separation and per-endpoint latency — against
+Runs the whole judge-shaped flow: warmup, tick, reply, suppression, a version
+bump, the reply families, audience separation and per-endpoint latency: against
 whatever base URL it is given. Use it locally before pushing and against the
 public HTTPS URL afterwards.
 
@@ -13,7 +13,7 @@ The challenge dataset supplies the payloads; point CHALLENGE_DIR at it if this
 script is not sitting beside the `magicpin-ai-challenge` directory.
 
 Exits non-zero if any check fails, so it can gate a deploy. It calls
-`/v1/teardown` first, which wipes the target's state — never run it against an
+`/v1/teardown` first, which wipes the target's state: never run it against an
 instance in the middle of a judged slot.
 """
 

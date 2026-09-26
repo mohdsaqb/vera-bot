@@ -2,7 +2,7 @@
 
 `challenge-brief.md` §6 defines a fixed submission test set that every
 participant produces a message for. These tests run the engine over that set and
-assert *general* properties — no expected body is hardcoded, because pinning the
+assert *general* properties: no expected body is hardcoded, because pinning the
 answers would tune the engine to the cases instead of improving the rules.
 
 Skipped when `expanded/` has not been generated:
@@ -96,7 +96,7 @@ class TestCoverage:
             assert result.rationale, pair["test_id"]
 
     def test_a_clear_majority_produce_a_message(self, outcomes):
-        """Restraint is rewarded, silence is not — the engine must do both."""
+        """Restraint is rewarded, silence is not: the engine must do both."""
         sent = [r for _, r in outcomes if r.should_send]
 
         assert len(sent) >= 15, f"only {len(sent)}/30 produced a message"

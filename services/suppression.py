@@ -1,4 +1,4 @@
-"""Suppression ledger — what has already been said, and against which context.
+"""Suppression ledger: what has already been said, and against which context.
 
 Three guards, all required by the challenge's penalty table and its adaptive
 scoring:
@@ -15,7 +15,7 @@ scoring:
 
 Those three combine into one rule (`should_send`): the same story goes out again
 only when a newer context version has arrived *and* the message it produces is
-different. Neither condition alone is enough — a version bump that changes
+different. Neither condition alone is enough: a version bump that changes
 nothing stays quiet, and a reworded body with no new facts stays quiet too.
 
 Kept out of `ContextStore` on purpose: the store holds what the judge pushed,
@@ -86,8 +86,7 @@ class SuppressionLedger:
     def is_suppressed(self, suppression_key: str) -> bool:
         """True when anything has gone out under this key.
 
-        Used for flags that are set rather than sent — an opt-out marker, say —
-        where there is no body to compare.
+        Used for flags that are set rather than sent, an opt-out marker, say,         where there is no body to compare.
         """
         if not suppression_key:
             return False

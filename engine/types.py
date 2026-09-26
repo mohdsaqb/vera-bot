@@ -4,7 +4,7 @@ Everything here is a frozen dataclass: a stage takes normalized context in and
 returns an immutable decision out, so the pipeline is easy to test in isolation
 and impossible to mutate accidentally halfway through.
 
-`MessagePlan` is the important one — it is the contract between this
+`MessagePlan` is the important one: it is the contract between this
 deterministic engine and the future LLM renderer. It carries only facts that
 were read out of the four contexts, each with its provenance, so a generator
 consuming it cannot invent numbers it was not given.
@@ -125,7 +125,7 @@ class NormalizedMerchant:
     def has_talked_before(self) -> bool:
         """True when Vera and this merchant already have a message history.
 
-        Drives salutation choice — re-introducing yourself is a listed
+        Drives salutation choice: re-introducing yourself is a listed
         anti-pattern (challenge-brief.md §11).
         """
         return bool(self.conversation_history)
@@ -197,7 +197,7 @@ class NormalizedTrigger:
 
         `generate_dataset.py` emits `{"placeholder": true, "metric_or_topic": …}`
         for the 75 expanded triggers, so the engine must fall back to
-        merchant/category facts — or decline — rather than invent the missing ones.
+        merchant/category facts, or decline, rather than invent the missing ones.
         """
         return bool(self.payload.get("placeholder")) or not self.payload
 
@@ -212,7 +212,7 @@ class Signal:
     """One verifiable fact, with where it came from.
 
     `text` is merchant/customer-ready phrasing; `source` is the dotted path in
-    the input contexts, which is what keeps the engine honest — a signal with no
+    the input contexts, which is what keeps the engine honest: a signal with no
     source cannot be built.
     """
 
@@ -250,7 +250,7 @@ class OfferChoice:
 class Action:
     """The one thing Vera asks for. `cta` is the challenge's CTA taxonomy.
 
-    `ask` carries its own final punctuation — whether a given ask reads as a
+    `ask` carries its own final punctuation: whether a given ask reads as a
     question or as an instruction is a property of how it was written, not
     something to infer later. `*_hi` are the Hindi-English variants, used when
     the recipient's language preference includes Hindi.
@@ -367,7 +367,7 @@ class ConversationState:
     merchant_id: str = ""
     customer_id: str | None = None
 
-    # What this conversation is about — the decision that opened it.
+    # What this conversation is about: the decision that opened it.
     trigger_id: str = ""
     family: str = ""
     action_key: str = ""
@@ -474,7 +474,7 @@ class GenerationBrief:
     """Everything a writer is allowed to know, and nothing else.
 
     Built from a decision that has already been made. It carries the facts that
-    may be stated, the one ask, and the voice to use — but not the trigger queue,
+    may be stated, the one ask, and the voice to use: but not the trigger queue,
     the suppression key, the sender decision or any context the decision did not
     select. A writer cannot widen the message because it cannot see anything
     wider.
@@ -554,7 +554,7 @@ class MessageWriter(Protocol):
 
 @dataclass(frozen=True)
 class ComposedMessage:
-    """Result of `compose()` — either a message to send, or a reasoned no-op."""
+    """Result of `compose()`: either a message to send, or a reasoned no-op."""
 
     decision: str  # "send" | "no_action"
     reason_code: str

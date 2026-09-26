@@ -1,4 +1,4 @@
-"""ContextStore unit tests — version semantics, retrieval, reset."""
+"""ContextStore unit tests: version semantics, retrieval, reset."""
 
 from __future__ import annotations
 

@@ -3,8 +3,8 @@
 `test_canonical_pairs.py` exercises `compose()` directly; this suite pushes each
 pair's contexts to `/v1/context` and reads the action back from `/v1/tick`, which
 is the only path the judge uses. It also captures the per-pair record the phase
-brief asks for — trigger, signal, action, body, CTA, suppression key, rationale,
-latency — and asserts the five scored dimensions as properties of the whole set
+brief asks for: trigger, signal, action, body, CTA, suppression key, rationale,
+latency: and asserts the five scored dimensions as properties of the whole set
 rather than as expected answers for individual cases.
 
 Skipped when `expanded/` has not been generated:

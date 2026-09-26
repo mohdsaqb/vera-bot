@@ -1,4 +1,4 @@
-"""POST /v1/tick and POST /v1/reply — request handling and operational floors.
+"""POST /v1/tick and POST /v1/reply: request handling and operational floors.
 
 `/v1/tick` is now backed by the decision engine (see `test_tick_decisions.py`
 for the decision behaviour); what is pinned here is the contract floor the judge

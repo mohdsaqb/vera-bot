@@ -1,4 +1,4 @@
-"""POST /v1/context — versioned ingestion over HTTP.
+"""POST /v1/context: versioned ingestion over HTTP.
 
 Shapes asserted here come from challenge-testing-brief.md §2.1 and
 examples/api-call-examples.md §1.3-1.6.

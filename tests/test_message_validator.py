@@ -1,7 +1,7 @@
 """Grounding checks on generated text.
 
 Containment, not comprehension: a figure is acceptable only when that exact
-figure appears in the brief. Blunt by design — it cannot be argued around.
+figure appears in the brief. Blunt by design: it cannot be argued around.
 """
 
 from __future__ import annotations

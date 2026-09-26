@@ -94,7 +94,7 @@ CONSENT_SCOPES_BY_FAMILY: Final[dict[str, tuple[str, ...]]] = {
 }
 
 # Broad marketing consent. It authorises promotional outreach (winback, offers,
-# seasonal) but never a clinical or medication-related reminder — sending a
+# seasonal) but never a clinical or medication-related reminder: sending a
 # prescription refill note to someone who only agreed to receive offers is the
 # kind of consent stretch the pharmacy and dentist voice rules rule out.
 BROAD_MARKETING_SCOPE: Final[str] = "promotional_offers"
@@ -103,7 +103,7 @@ CLINICAL_FAMILIES: Final[frozenset[str]] = frozenset({"recall", "refill", "compl
 # --------------------------------------------------------------------------- #
 # Trigger priority weights
 # --------------------------------------------------------------------------- #
-# Weights, not arbitrary constants — each maps to something the challenge scores
+# Weights, not arbitrary constants: each maps to something the challenge scores
 # or states:
 #   urgency            the dataset sets 1-5 deliberately (5 = drug recall,
 #                      1 = curious ask) and the design doc says triggers "rank
@@ -113,7 +113,7 @@ CLINICAL_FAMILIES: Final[frozenset[str]] = frozenset({"recall", "refill", "compl
 #                      no-fabrication floor).
 #   actionable_value   "engagement compulsion" needs a concrete next step.
 #   category_fit       "category fit" is a scored dimension.
-#   time_pressure      "why now" — a closing window earns interruption.
+#   time_pressure      "why now": a closing window earns interruption.
 PRIORITY_WEIGHTS: Final[dict[str, float]] = {
     "urgency": 0.35,
     "merchant_relevance": 0.25,
@@ -212,7 +212,7 @@ CTA_CONFIRM: Final[str] = "binary_confirm_cancel"
 CTA_SLOTS: Final[str] = "multi_choice_slot"
 CTA_NONE: Final[str] = "none"
 
-# Effort framing — "effort externalization" is compulsion lever #4. Only ever a
+# Effort framing: "effort externalization" is compulsion lever #4. Only ever a
 # statement about Vera's own work, never an invented merchant-side promise.
 EFFORT_NOTES: Final[dict[str, str]] = {
     "draft_content": "I'll have the draft ready in a couple of minutes",
@@ -307,7 +307,7 @@ WINDOW_LABELS: Final[dict[str, str]] = {
 # A research item that names the segment it applies to can be tied to this
 # merchant's own roster, which is what turns a category fact into a merchant
 # fact ("relevant to your high-risk adult patients"). Both halves must exist in
-# the data — the segment on the digest item, the count on the merchant.
+# the data: the segment on the digest item, the count on the merchant.
 SEGMENT_TO_AGGREGATE_KEY: Final[dict[str, tuple[str, str]]] = {
     "high_risk_adults": ("high_risk_adult_count", "high-risk adults"),
     "chronic": ("chronic_rx_count", "repeat-prescription customers"),
@@ -361,7 +361,7 @@ FAMILIES_REQUIRING_PAYLOAD_FACT: Final[frozenset[str]] = frozenset(
 # Customer state agreement
 # --------------------------------------------------------------------------- #
 # `customer.state` is the dataset's own read on the relationship, so a trigger
-# family only applies when the two agree — a winback aimed at an "active"
+# family only applies when the two agree: a winback aimed at an "active"
 # customer, or a trial follow-up for someone who has been coming for a year, is
 # the trigger being wrong about the person.
 STATES_FOR_FAMILY: Final[dict[str, frozenset[str]]] = {
@@ -420,7 +420,7 @@ MAX_UNANSWERED_NUDGES: Final[int] = 3
 #
 # Entries are (aggregate key, phrasing template, kind) where the template takes
 # the formatted value. Ordered by how directly each implies an action, and only
-# keys the dataset actually carries are listed — nothing here invents a metric.
+# keys the dataset actually carries are listed: nothing here invents a metric.
 AGGREGATE_FACTS_BY_CATEGORY: Final[dict[str, tuple[tuple[str, str, str], ...]]] = {
     "gyms": (
         ("monthly_churn_pct", "membership churn is running at {value} a month", "rate"),
@@ -456,7 +456,7 @@ AGGREGATE_FACTS_BY_CATEGORY: Final[dict[str, tuple[tuple[str, str, str], ...]]] 
 # Which second fact anchors the message best depends on what the message is
 # about. Left to one global order, the peer click-through comparison wins almost
 # every time, and the same benchmark sentence then appears in nearly every
-# message across all five verticals — which is the absence of category voice the
+# message across all five verticals, which is the absence of category voice the
 # case studies penalise.
 #
 # So each family names its own preference, and the reasoning is the same each

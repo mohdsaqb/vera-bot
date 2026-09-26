@@ -4,7 +4,7 @@ Each extractor returns `Signal`s built strictly from values present in the four
 contexts, carrying the dotted path they came from. `select_primary_signal`
 returns the one fact that earns the message (the "why now"), and
 `select_supporting_fact` returns at most one more (the merchant/customer anchor).
-Two facts is the cap on purpose — dumping every available number is what makes
+Two facts is the cap on purpose: dumping every available number is what makes
 messages unreadable and, per the rubric, no more specific.
 
 Strengths are on 0-1 and only ever compare facts *within* a decision, so their
@@ -217,7 +217,7 @@ def subscription_signal(merchant: NormalizedMerchant) -> Signal | None:
 
 
 def offer_gap_signal(merchant: NormalizedMerchant) -> Signal | None:
-    """No active offer on the listing — a concrete, checkable gap."""
+    """No active offer on the listing: a concrete, checkable gap."""
     if merchant.active_offers:
         return None
     expired = merchant.expired_offers
@@ -318,7 +318,7 @@ def local_relevance_signal(
 
 
 def digest_action_signal(primary: Signal) -> Signal | None:
-    """The digest item's own `actionable` line — supplied, practice-level advice."""
+    """The digest item's own `actionable` line: supplied, practice-level advice."""
     actionable = primary.data.get("actionable")
     if not isinstance(actionable, str) or not actionable:
         return None
@@ -335,8 +335,8 @@ def customer_base_signal(merchant: NormalizedMerchant) -> Signal | None:
     """The most useful number from the merchant's customer aggregate.
 
     Phrased in the category's own terms where the dataset carries a
-    vertical-specific metric — a gym hears about membership churn, a restaurant
-    about delivery share — because absent trade vocabulary reads as not having
+    vertical-specific metric: a gym hears about membership churn, a restaurant
+    about delivery share: because absent trade vocabulary reads as not having
     used the category context. Falls back to the generic keys every category has.
     """
     aggregate = merchant.customer_aggregate
@@ -413,7 +413,7 @@ def digest_signal(
 ) -> Signal | None:
     """The digest item the trigger points at, resolved from the category pack.
 
-    Research and compliance claims carry their citation — the case studies cap
+    Research and compliance claims carry their citation: the case studies cap
     the score at 7 for an uncited claim, and an unresolvable id must produce no
     claim at all rather than a plausible-sounding one.
     """
@@ -1012,16 +1012,10 @@ def customer_relationship_signal(
 _FALLBACK_CHAIN: dict[str, tuple[str, ...]] = {
     "performance": ("delta", "peer_gap"),
     "listing": ("listing", "peer_gap"),
-    # Dormancy is deliberately last. "It has been N days since your last message
-    # to me" is a fact about Vera's own inbox, not about the merchant's business,
-    # so it justifies the timing but anchors nothing the merchant can act on;
-    # it still reaches the message as the supporting "why now".
-    # Re-engagement is about the customers going quiet, not the click rate — the
-    # same principle SUPPORTING_FACT_ORDER states for this family. Leading on the
-    # subscription state was tried and rejected: the merchant's winback trigger
-    # already tells the lapsed-plan story, so it produced two near-identical
-    # messages. A peer click-through benchmark was tried too, and reads as funnel
-    # analytics in a warm_practical category.
+    # Re-engagement is about the customers going quiet, not the click rate, the
+    # same principle SUPPORTING_FACT_ORDER states for this family. Dormancy is
+    # last: "N days since your last message to me" describes Vera's own inbox,
+    # not anything the merchant can act on.
     "reengagement": ("customer_base", "delta", "peer_gap", "dormancy"),
     "curiosity": ("delta", "peer_gap", "review_pos", "customer_base"),
     "account": ("subscription", "delta"),
@@ -1081,7 +1075,7 @@ def select_primary_signal(
       1. what the trigger itself supplies (it defines the "why now"),
       2. the digest item it points at, for knowledge/compliance families,
       3. a fallback fact derived from context,
-      4. nothing — the caller then declines rather than padding.
+      4. nothing: the caller then declines rather than padding.
 
     For a customer-scoped trigger the fallback is restricted to facts about that
     customer's own relationship with the business. Merchant analytics are
@@ -1091,7 +1085,7 @@ def select_primary_signal(
     digest = digest_signal(category, trigger)
 
     if family == "compliance":
-        # A recall notice is only actionable with the specifics — molecule and
+        # A recall notice is only actionable with the specifics: molecule and
         # batch numbers live in the payload, the citation on the digest item, so
         # the payload fact wins and borrows the item's source.
         payload_fact = trigger_payload_signal(trigger, merchant, customer)
@@ -1172,7 +1166,7 @@ def select_supporting_fact(
     family = policy.family_for(trigger.kind)
     if family in {"knowledge", "compliance"}:
         # A knowledge item is anchored either on the cohort it affects or on the
-        # step it asks for — both supplied with the item. Practice analytics are
+        # step it asks for: both supplied with the item. Practice analytics are
         # unrelated to a clinical finding and would read as a non-sequitur.
         cohort = cohort_for_digest_signal(merchant, primary)
         if cohort is not None:

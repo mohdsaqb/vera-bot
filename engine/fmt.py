@@ -3,7 +3,7 @@
 Kept separate because both the signal extractors (which build fact sentences)
 and the renderer (which builds bodies) need the exact same phrasing, and because
 "how a number is written" is where vague copy usually creeps in. Nothing here
-computes new values — it only presents values read from the contexts.
+computes new values: it only presents values read from the contexts.
 """
 
 from __future__ import annotations
@@ -60,7 +60,7 @@ def rupees(value: str | float | int) -> str:
 
 
 def day_label(value: str | datetime | None) -> str:
-    """Format a date as "28 Apr" — short, unambiguous, no invented weekday."""
+    """Format a date as "28 Apr": short, unambiguous, no invented weekday."""
     moment = parse_iso(value)
     if moment is None:
         return ""
@@ -89,7 +89,7 @@ def first_sentence(text: str) -> str:
     """First sentence of a summary, without splitting on abbreviations.
 
     A period only ends a sentence when it follows a word of more than two
-    characters and precedes a capitalised word — which keeps "Dr. R. Mehta" and
+    characters and precedes a capitalised word: which keeps "Dr. R. Mehta" and
     "1.5 mSv" intact in the digest summaries.
     """
     cleaned = " ".join(text.split())

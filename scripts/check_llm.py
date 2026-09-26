@@ -12,7 +12,7 @@ mode all work together, and it costs a single completion.
     python scripts/check_llm.py
 
 Exits 0 when the model produced a usable body, 1 otherwise. A failure here is not
-fatal to the bot — every message would simply be written deterministically — but it
+fatal to the bot, every message would simply be written deterministically, but it
 means the wording layer is not earning its keep.
 """
 

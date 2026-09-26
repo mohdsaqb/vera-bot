@@ -2,7 +2,7 @@
 
 Given the four challenge contexts, decides whether to speak, what the strongest
 factual reason is, which real offer to use, the single next step to ask for, and
-what to do about each inbound reply — with no randomness, no clock reads and no
+what to do about each inbound reply: with no randomness, no clock reads and no
 model calls. Wording may be delegated to a `MessageWriter`; nothing else can be.
 
 Outbound:

@@ -1,4 +1,4 @@
-"""Offer selection: a real offer, or none — never an invented one."""
+"""Offer selection: a real offer, or none: never an invented one."""
 
 from __future__ import annotations
 

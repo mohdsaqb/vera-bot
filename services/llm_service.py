@@ -1,14 +1,14 @@
 """The wording layer: turn a decided message into natural language.
 
 This is the only module that talks to a model provider. It receives a
-`GenerationBrief` — a decision that has already been made — asks for one
+`GenerationBrief`, a decision that has already been made, asks for one
 structured completion, validates the result deterministically, and returns the
 Phase 2 rendering instead whenever anything is wrong.
 
 What this module may change: the wording of the body.
 What it may never change: the trigger, the signal, the offer, the action, the
 CTA, the sender, the suppression key, the rationale, or whether to send at all.
-Those arrive already decided and leave untouched — see `engine/compose.py`.
+Those arrive already decided and leave untouched: see `engine/compose.py`.
 
 Failure is expected, not exceptional. No API key, no package installed, a
 timeout, a refusal, malformed structure, an ungrounded number: every one of them
@@ -108,7 +108,7 @@ class LLMMessage(BaseModel):
 def render_prompt(brief: GenerationBrief) -> str:
     """Render the human half of the prompt from the brief.
 
-    Only brief fields appear — the writer never sees the merchant payload, the
+    Only brief fields appear: the writer never sees the merchant payload, the
     trigger queue, the suppression key or anything else the decision used.
     """
     facts = "\n".join(f"- {fact}" for fact in brief.facts) or "- (none supplied)"
@@ -196,7 +196,7 @@ class TickBudget:
 
     The deadline is checked with room for the call about to be made, not just for
     the moment it starts. Otherwise a call beginning a moment inside the deadline
-    could run its full per-call timeout past it — two 6-second calls inside an
+    could run its full per-call timeout past it: two 6-second calls inside an
     8-second budget would overshoot the tick's own 10-second limit.
     """
 
@@ -376,7 +376,7 @@ class LLMWriter:
 
         # Logged on success as well as failure: without this there is no way to
         # confirm from the outside that the model is actually wording messages,
-        # which is the first thing to check after a deploy. Length only — the body
+        # which is the first thing to check after a deploy. Length only: the body
         # itself is already visible in the action the caller returns.
         logger.info(
             "wording: llm accepted for %s/%s in %dms (%d chars)",

@@ -1,6 +1,6 @@
 """Production safety nets: the access log, the catch-all handler, and startup.
 
-These pin behaviour that only matters once the bot is serving real traffic — that
+These pin behaviour that only matters once the bot is serving real traffic: that
 an unhandled fault still answers with valid JSON, that nothing sensitive reaches
 the log, and that the app starts and serves with no optional dependency present.
 """
@@ -178,3 +178,25 @@ class TestStartupPortability:
             assert get_settings().host == "0.0.0.0"
         finally:
             get_settings.cache_clear()
+
+
+def test_oversized_request_is_rejected_before_it_is_read():
+    """A context payload is a few KB; a huge one must not reach the store."""
+    from fastapi.testclient import TestClient
+
+    from app import MAX_BODY_BYTES, app
+
+    with TestClient(app) as client:
+        response = client.post(
+            "/v1/context",
+            content=b"{}",
+            headers={
+                "Content-Type": "application/json",
+                # Declared, not actually sent: the guard reads the header so the
+                # body is never buffered.
+                "Content-Length": str(MAX_BODY_BYTES + 1),
+            },
+        )
+
+    assert response.status_code == 413
+    assert response.json()["error"] == "payload_too_large"

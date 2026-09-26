@@ -6,8 +6,8 @@ preference, one CTA in the final sentence.
 
 Message shape, in order (challenge-brief.md §16 and the case-study patterns):
 
-    <salutation> — <why now, from the trigger>. <one anchoring fact about this
-    recipient>. <the real offer or resource>. <one ask>  [— citation]
+    <salutation>: <why now, from the trigger>. <one anchoring fact about this
+    recipient>. <the real offer or resource>. <one ask>  [: citation]
 
 Wording here is this project's own. The case studies are explicit that copying
 their body text is penalised, so they were used only for shape and for the
@@ -63,7 +63,7 @@ _ASK_HI_EN: Final[dict[str, str]] = {
     "confirm_dispatch": "CONFIRM reply kijiye, ya dose badli ho to bata dijiye.",
 }
 
-# One emoji, customer-facing only, and never for pharmacies — the pharmacy voice
+# One emoji, customer-facing only, and never for pharmacies: the pharmacy voice
 # is "trustworthy_precise" and the regulated-category cases carry no decoration.
 _CUSTOMER_EMOJI: Final[dict[str, str]] = {
     "dentists": "🦷",
@@ -125,7 +125,7 @@ def merchant_salutation(
 
     # Where the message's second fact comes from the category rather than from this
     # merchant, the locality is the one piece of merchant-specific detail available
-    # — the judge names its absence directly ("omits locality or specific practice
+    #: the judge names its absence directly ("omits locality or specific practice
     # data beyond the name"), and it is real supplied data, not a flourish.
     place = f", {merchant.locality}" if with_locality and merchant.locality else ""
 
@@ -178,7 +178,7 @@ def _capitalise(text: str) -> str:
 def _offer_sentence(plan: MessagePlan) -> str:
     """The offer clause, or nothing.
 
-    Dropped when the ask already names it — no point saying the title twice.
+    Dropped when the ask already names it: no point saying the title twice.
     Families where an offer does not belong at all never carry one (see
     `offers.select_offer`).
     """
@@ -199,8 +199,7 @@ def _ask_sentence(plan: MessagePlan) -> str:
     """The single CTA, always last, in the recipient's language.
 
     Asks are authored with their own punctuation, so nothing is guessed here. The
-    effort note follows as a short fragment after the ask rather than inside it —
-    the ask stays the thing the eye lands on, which is what keeps it from being
+    effort note follows as a short fragment after the ask rather than inside it: the ask stays the thing the eye lands on, which is what keeps it from being
     buried.
     """
     action = plan.action
@@ -251,7 +250,7 @@ def _readable_season(token: str) -> str:
 
 
 def _seasonal_reframe(plan: MessagePlan) -> str:
-    """For an expected seasonal dip, say so — it changes the merchant's response."""
+    """For an expected seasonal dip, say so: it changes the merchant's response."""
     data = plan.primary_fact.data
     if not data.get("is_expected_seasonal"):
         return ""
@@ -297,7 +296,7 @@ def render_body(
     The salutation comes from the plan rather than being recomputed, so the body
     and the brief handed to a writer always open the same way.
     """
-    # The plan already decided how to address the recipient — recomputing it here
+    # The plan already decided how to address the recipient: recomputing it here
     # would silently diverge from what the brief tells a writer to open with.
     salutation = plan.salutation
     if plan.audience == "customer" and customer is not None:
@@ -311,7 +310,7 @@ def render_body(
     # A family judgement sentence (a seasonal reframe, a match-night call) carries
     # its own "so what", so the anchor becomes a third fact competing for the
     # reader's attention. It is kept only while the whole message still reads
-    # quickly — a delivery-order count genuinely strengthens a delivery
+    # quickly: a delivery-order count genuinely strengthens a delivery
     # recommendation, but not at the cost of a wall of text.
     judgement = _seasonal_reframe(plan) or _match_night_judgement(plan)
     slots = _slot_sentence(plan)
@@ -319,7 +318,7 @@ def render_body(
     ask = _ask_sentence(plan)
     if judgement and anchor:
         # Measured against every part that will actually be in the body, the ask
-        # included — it is the longest single clause and leaving it out of the
+        # included: it is the longest single clause and leaving it out of the
         # projection would let the message run well past the limit.
         projected = len(
             " ".join(part for part in (salutation, why_now, judgement, slots, anchor,
@@ -361,7 +360,7 @@ def validate_body(body: str, plan: MessagePlan) -> tuple[str, ...]:
     Returns the problems found; an empty tuple means the body is safe to send.
     Checked here rather than trusted, so a template change can never silently
     start emitting a penalised message:
-      * URLs — a hard fail per action (api-call-examples.md F.4)
+      * URLs: a hard fail per action (api-call-examples.md F.4)
       * category taboo vocabulary (`voice.vocab_taboo`)
       * unresolved template placeholders
       * empty body, or more than one question mark (multiple competing CTAs)

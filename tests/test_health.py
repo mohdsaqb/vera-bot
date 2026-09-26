@@ -1,4 +1,4 @@
-"""GET /v1/healthz — liveness probe and context accounting."""
+"""GET /v1/healthz: liveness probe and context accounting."""
 
 from __future__ import annotations
 

@@ -1,6 +1,6 @@
 """In-memory, versioned store for the four context scopes.
 
-Owns *storage* semantics only — which version wins, what is currently held, how
+Owns *storage* semantics only: which version wins, what is currently held, how
 many contexts exist per scope. It deliberately contains no decision logic
 (trigger ranking, suppression, composition); those live in the Phase 2
 engine and read from this store.
@@ -14,8 +14,7 @@ Version rules (challenge-testing-brief.md §2.1):
 
 The two same-version cases are split deliberately. The brief calls a repeat
 "idempotent", the API examples show a `409` for one, and the warmup check treats
-any `accepted: false` as a failed warmup that disqualifies the bot for that slot —
-so a retried push of *identical* content has to read as success, because nothing
+any `accepted: false` as a failed warmup that disqualifies the bot for that slot: so a retried push of *identical* content has to read as success, because nothing
 about the stored state differs from what the caller asked for. A same-version push
 carrying *different* content is a real disagreement about what that version means,
 and that still conflicts.
@@ -57,7 +56,7 @@ class SaveResult:
         stored: True when this push became the held version.
         version: the version held *after* the call (the pushed one when
             ``stored``, otherwise the version already in the store).
-        reason: why nothing was written — ``already_stored`` for an identical
+        reason: why nothing was written: ``already_stored`` for an identical
             repeat, ``stale_version`` for a genuine conflict.
         record: the context now held for the key.
     """

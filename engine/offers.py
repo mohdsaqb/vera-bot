@@ -2,15 +2,15 @@
 
 Two sources, in strict preference order:
 
-1. `merchant.offers` with `status == "active"` — something the merchant already
+1. `merchant.offers` with `status == "active"`: something the merchant already
    runs. Referencing it costs the merchant nothing and is verifiable.
-2. `category.offer_catalog` — the canonical service+price patterns supplied with
+2. `category.offer_catalog`: the canonical service+price patterns supplied with
    the challenge. These are real supplied data, but they are *not* live for this
    merchant, so a choice from here is marked `is_existing=False` and the renderer
    must phrase it as a proposal ("want me to set it up?"), never as live.
 
 Nothing is ever synthesised: no invented price, discount, expiry or service.
-Expired merchant offers are never offered — they may only appear as background
+Expired merchant offers are never offered: they may only appear as background
 in a signal (see `signals.offer_gap_signal`).
 """
 
@@ -75,8 +75,8 @@ def _rank(
 
       1. is it relevant to this moment or recipient at all,
       2. fit with this specific recipient (their own past services, senior
-         status) — personal fit is what "merchant/customer fit" is scored on,
-      3. offer shape — a service at a named price beats a bare percentage
+         status): personal fit is what "merchant/customer fit" is scored on,
+      3. offer shape: a service at a named price beats a bare percentage
          (challenge-brief.md §3 and §11),
       4. how strongly the title matched the moment,
       5. audience fit with the recipient's state.
@@ -130,7 +130,7 @@ def select_offer(
         return None
 
     # Only propose a catalog pattern when it is actually relevant to the moment
-    # or the recipient — a random catalog entry is noise, not specificity.
+    # or the recipient: a random catalog entry is noise, not specificity.
     scored = [(o, _rank(o, hints, customer)) for o in catalog]
     relevant = [(o, key) for o, key in scored if key[0] > 0 or key[1] > 0]
     if not relevant:

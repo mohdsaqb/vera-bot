@@ -1,7 +1,6 @@
 """The writer inside the real pipeline: `compose()`, `/v1/tick`, and determinism.
 
-Two things are pinned here. First, that generation only ever changes wording —
-the trigger, signal, offer, CTA, sender, suppression key and rationale come out
+Two things are pinned here. First, that generation only ever changes wording: the trigger, signal, offer, CTA, sender, suppression key and rationale come out
 of a generated message exactly as they came out of a deterministic one. Second,
 that the API keeps working when the model does not.
 """

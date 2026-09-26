@@ -1,8 +1,8 @@
 """Build the generation brief from a decision that has already been made.
 
 This module is the boundary of what a writer may see. A `MessagePlan` holds the
-whole decision — trigger ranking, provenance paths, suppression key, sender
-identity — and most of that is none of a writer's business. `brief_for_plan`
+whole decision, trigger ranking, provenance paths, suppression key, sender
+identity, and most of that is none of a writer's business. `brief_for_plan`
 projects out only the parts that belong in prose: the facts, the one ask, the
 voice, and the deterministic rendering to fall back to.
 

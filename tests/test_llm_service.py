@@ -1,7 +1,7 @@
 """The wording layer, with the model mocked. No test here makes a network call.
 
-What is pinned: a valid generation is used, and everything else — malformed
-output, an exception, a missing key, an ungrounded number, a second ask — resolves
+What is pinned: a valid generation is used, and everything else: malformed
+output, an exception, a missing key, an ungrounded number, a second ask: resolves
 to the deterministic body without raising.
 """
 

@@ -1,7 +1,7 @@
 """What to do about an inbound reply. Deterministic, like every other decision.
 
 `decide_reply` maps (conversation state, classified intent) onto one of the three
-actions the contract allows — `send`, `wait`, `end` — and, when sending, drafts
+actions the contract allows, `send`, `wait`, `end`, and, when sending, drafts
 the body from facts the conversation already holds. A writer may afterwards
 reword that draft, but it cannot change the action, the CTA or the facts.
 
@@ -34,7 +34,7 @@ from engine.types import ConversationState, GenerationBrief
 # Backoffs, in seconds. The auto-reply values follow the replay scenario in
 # api-call-examples.md §4.1: a few hours after the first canned reply, a day
 # after the second.
-WAIT_AFTER_AUTO_REPLY = 14_400        # 4 hours — the owner may pick the phone up
+WAIT_AFTER_AUTO_REPLY = 14_400        # 4 hours: the owner may pick the phone up
 WAIT_AFTER_SECOND_AUTO_REPLY = 86_400  # 24 hours
 WAIT_AFTER_DELAY_SOON = 14_400         # "later", "in a bit"
 WAIT_AFTER_DELAY_TOMORROW = 86_400     # "tomorrow", "next week"
@@ -77,7 +77,7 @@ def _recipient(state: ConversationState) -> str:
 def _address(state: ConversationState) -> str:
     """Closing address for a reply, when a name is known.
 
-    Replies in a live thread do not open with a name — the reference replies in
+    Replies in a live thread do not open with a name: the reference replies in
     the case studies do not, and re-introducing yourself mid-thread is a listed
     anti-pattern. A name is warmer at the end of a sign-off.
     """
@@ -89,7 +89,7 @@ def _subject(state: ConversationState) -> str:
     """A short noun phrase for what was being proposed.
 
     Prefers the real offer title, then the conversation's own ask, then a neutral
-    "it" — never a description the conversation does not hold.
+    "it": never a description the conversation does not hold.
     """
     brief = state.brief
     if brief and brief.offer_title:
@@ -195,7 +195,7 @@ def _on_question(state: ConversationState) -> ReplyDecision:
 
     The facts came from the decision that opened the thread, so restating one is
     grounded by construction. When none of them answers the question, the reply
-    says so — a guess is the one thing that must not happen.
+    says so: a guess is the one thing that must not happen.
     """
     brief = state.brief
     facts = brief.facts if brief else ()
@@ -235,7 +235,7 @@ def _on_off_topic(state: ConversationState) -> ReplyDecision:
     """Decline the detour in one clause and return to the single ask."""
     brief = state.brief
     ask = brief.ask if brief and brief.ask else ""
-    # With a live ask, return to it. Without one, invite something in scope —
+    # With a live ask, return to it. Without one, invite something in scope: 
     # never "carry on with that", which would point back at the detour.
     tail = (
         f" {ask}" if ask
@@ -394,7 +394,7 @@ def decide_reply(
     decision = branches.get(result.intent, lambda: _on_ambiguous(state))()
 
     # An acceptance is the one place where a stray qualifying question would undo
-    # the whole transition, so it is checked rather than assumed — and repaired
+    # the whole transition, so it is checked rather than assumed, and repaired
     # in place rather than raised, because a request path must not fail here.
     if (
         decision.is_send
