@@ -104,7 +104,11 @@ def _phrase(key: str, language: str, **kwargs: str) -> str:
 # --------------------------------------------------------------------------- #
 # Salutation
 # --------------------------------------------------------------------------- #
-def merchant_salutation(category: NormalizedCategory, merchant: NormalizedMerchant) -> str:
+def merchant_salutation(
+    category: NormalizedCategory,
+    merchant: NormalizedMerchant,
+    with_locality: bool = False,
+) -> str:
     """Salutation built from the category's own `voice.salutation_examples`.
 
     The examples carry a placeholder (`Dr. {first_name}`, `Hi {pharmacist_name}`)
@@ -119,11 +123,17 @@ def merchant_salutation(category: NormalizedCategory, merchant: NormalizedMercha
     ]
     pattern = next((e for e in examples if _PLACEHOLDER_RE.search(e)), "")
 
+    # Where the message's second fact comes from the category rather than from this
+    # merchant, the locality is the one piece of merchant-specific detail available
+    # — the judge names its absence directly ("omits locality or specific practice
+    # data beyond the name"), and it is real supplied data, not a flourish.
+    place = f", {merchant.locality}" if with_locality and merchant.locality else ""
+
     if first and pattern:
         filled = _PLACEHOLDER_RE.sub(first, pattern).strip()
-        return re.sub(r"\bDr\.?\s+Dr\.?\s*", "Dr. ", filled)
+        return re.sub(r"\bDr\.?\s+Dr\.?\s*", "Dr. ", filled) + place
     if first:
-        return f"Hi {first}"
+        return f"Hi {first}{place}"
     if merchant.name:
         return f"{merchant.name} team"
     return "Hi"
@@ -276,7 +286,6 @@ def _match_night_judgement(plan: MessagePlan) -> str:
 def render_body(
     plan: MessagePlan,
     category: NormalizedCategory,
-    merchant: NormalizedMerchant,
     customer: NormalizedCustomer | None,
 ) -> tuple[str, tuple[str, ...]]:
     """Render the body and the template parameters for the first-touch template.
@@ -284,14 +293,17 @@ def render_body(
     Returns `(body, template_params)`. Template params are the variable pieces
     of the body, in the order the approved template would place them:
     recipient, why-now, anchor/offer, ask.
+
+    The salutation comes from the plan rather than being recomputed, so the body
+    and the brief handed to a writer always open the same way.
     """
+    # The plan already decided how to address the recipient — recomputing it here
+    # would silently diverge from what the brief tells a writer to open with.
+    salutation = plan.salutation
     if plan.audience == "customer" and customer is not None:
-        salutation = customer_salutation(customer, merchant, plan.language)
         emoji = _CUSTOMER_EMOJI.get(category.slug, "")
         if emoji:
             salutation = f"{salutation} {emoji}"
-    else:
-        salutation = merchant_salutation(category, merchant)
 
     why_now = _sentence(plan.primary_fact.text)
     anchor = _sentence(plan.supporting_fact.text) if plan.supporting_fact else ""

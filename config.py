@@ -83,7 +83,7 @@ class Settings:
     llm_provider: str = ""
     llm_model: str = "openai/gpt-oss-120b"
     llm_temperature: float = 0.0
-    llm_timeout_seconds: float = 6.0
+    llm_timeout_seconds: float = 4.0
     # Generous enough for a reasoning model to think and still answer; the body
     # itself is a few hundred characters.
     llm_max_tokens: int = 1024
@@ -93,8 +93,8 @@ class Settings:
     #   effort — "low" keeps latency and token spend down; the wording task needs
     #            no deliberation, the decision is already made.
     #   format — "hidden" keeps the reasoning out of the returned content.
-    llm_reasoning_effort: str = ""
-    llm_reasoning_format: str = ""
+    llm_reasoning_effort: str = "low"
+    llm_reasoning_format: str = "hidden"
     # Per-tick ceiling: `/v1/tick` has a 10 s budget and may produce up to 20
     # actions, so generation is capped and the rest render deterministically.
     llm_max_calls_per_tick: int = 6
@@ -148,11 +148,11 @@ def get_settings() -> Settings:
         llm_provider=_env("LLM_PROVIDER", ""),
         llm_model=_env("LLM_MODEL", "openai/gpt-oss-120b"),
         llm_temperature=_float("LLM_TEMPERATURE", 0.0),
-        llm_timeout_seconds=_float("LLM_TIMEOUT_SECONDS", 6.0),
+        llm_timeout_seconds=_float("LLM_TIMEOUT_SECONDS", 4.0),
         llm_max_tokens=_int("LLM_MAX_TOKENS", 1024),
         llm_structured_method=_env("LLM_STRUCTURED_METHOD", "json_schema"),
-        llm_reasoning_effort=_env("LLM_REASONING_EFFORT", ""),
-        llm_reasoning_format=_env("LLM_REASONING_FORMAT", ""),
+        llm_reasoning_effort=_env("LLM_REASONING_EFFORT", "low"),
+        llm_reasoning_format=_env("LLM_REASONING_FORMAT", "hidden"),
         llm_max_calls_per_tick=_int("LLM_MAX_CALLS_PER_TICK", 6),
         llm_tick_budget_seconds=_float("LLM_TICK_BUDGET_SECONDS", 8.0),
     )

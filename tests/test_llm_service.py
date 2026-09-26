@@ -192,6 +192,11 @@ def test_missing_api_key_means_no_call(monkeypatch, brief):
 
 
 def test_build_writer_defaults_to_deterministic():
+    """With no provider configured, no network client is ever constructed."""
+    from config import Settings
+
+    assert isinstance(build_writer(Settings()), DeterministicWriter)
+    # And through the ambient path, which the autouse fixture has neutralised.
     assert isinstance(build_writer(), DeterministicWriter)
 
 
@@ -312,7 +317,7 @@ class TestModelParameters:
             def __init__(self, **kwargs):
                 captured.update(kwargs)
 
-            def with_structured_output(self, schema, method=None):
+            def with_structured_output(self, schema, method=None):  # noqa: ARG002
                 captured["method"] = method
                 return self
 
@@ -338,10 +343,20 @@ class TestModelParameters:
         return captured
 
     def test_reasoning_controls_are_omitted_when_unset(self, monkeypatch):
-        kwargs = self._built_kwargs(monkeypatch)
+        """A model that does not understand them must never receive them."""
+        kwargs = self._built_kwargs(
+            monkeypatch, llm_reasoning_effort="", llm_reasoning_format=""
+        )
 
         assert "reasoning_effort" not in kwargs
         assert "reasoning_format" not in kwargs
+
+    def test_the_shipped_defaults_do_send_them(self, monkeypatch):
+        """The default model is a reasoning model, so the defaults are populated."""
+        kwargs = self._built_kwargs(monkeypatch)
+
+        assert kwargs["reasoning_effort"] == "low"
+        assert kwargs["reasoning_format"] == "hidden"
 
     def test_reasoning_controls_are_passed_when_set(self, monkeypatch):
         kwargs = self._built_kwargs(

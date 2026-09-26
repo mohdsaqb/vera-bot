@@ -92,7 +92,7 @@ def brief_for_plan(
     customer: NormalizedCustomer | None,
 ) -> GenerationBrief:
     """Project a `MessagePlan` into the brief a writer receives."""
-    body, _ = render.render_body(plan, category, merchant, customer)
+    body, _ = render.render_body(plan, category, customer)
     recipient = (
         customer.name.split("(")[0].strip()
         if plan.audience == "customer" and customer is not None

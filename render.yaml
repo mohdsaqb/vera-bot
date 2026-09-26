@@ -27,6 +27,14 @@ services:
         sync: false
       - key: LLM_MODEL
         sync: false
+      - key: LLM_STRUCTURED_METHOD
+        sync: false
+      - key: LLM_TIMEOUT_SECONDS
+        sync: false
+      - key: LLM_REASONING_EFFORT
+        sync: false
+      - key: LLM_REASONING_FORMAT
+        sync: false
       - key: TEAM_NAME
         sync: false
       - key: TEAM_MEMBERS

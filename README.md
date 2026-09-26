@@ -120,14 +120,30 @@ To have Llama word the messages, set the environment (see `.env.example`):
 
 ```bash
 export LLM_PROVIDER=groq
-export LLM_MODEL=llama-3.3-70b-versatile   # must be one your account serves
-export GROQ_API_KEY=...                    # never committed
+export LLM_MODEL=openai/gpt-oss-120b   # must be one your account serves
+export GROQ_API_KEY=...                # never committed
 ```
 
-Model ids are retired over time, so check
-[console.groq.com/docs/models](https://console.groq.com/docs/models) first. A
-wrong id, a bad key or an unreachable provider degrades to deterministic wording
-rather than failing a request. The startup log says which layer is active:
+Model ids are retired over time and accounts differ, so list yours first:
+
+```bash
+curl -s https://api.groq.com/openai/v1/models \
+  -H "Authorization: Bearer $GROQ_API_KEY" | grep '"id"'
+```
+
+Pick a text model. The list also contains speech (`whisper-*`), text-to-speech
+(`orpheus-*`) and classifier (`llama-prompt-guard-*`, `*-safeguard-*`) models,
+none of which write prose. Then confirm the whole chain with one real call:
+
+```bash
+python scripts/check_llm.py
+```
+
+That prints the configuration, makes a single completion, and says whether the
+result survived the grounding validator — with the specific setting to change if
+it did not. A wrong id, a bad key or an unreachable provider degrades to
+deterministic wording rather than failing a request. The startup log says which
+layer is active:
 
 ```
 INFO vera.api wording layer: llm (provider=groq model=llama-3.3-70b-versatile)
@@ -488,7 +504,8 @@ vera-bot/
 │   ├── test_canonical_endpoints.py    # the 30 pairs through /v1/tick
 │   └── test_production_hardening.py   # error handler, access log, portability
 ├── scripts/
-│   └── smoke_test.py             # drive a live deployment through the contract
+│   ├── smoke_test.py             # drive a live deployment through the contract
+│   └── check_llm.py              # one real call: does the wording layer work?
 ├── conftest.py                   # TestClient, state reset, dataset fixtures, HTTP drivers
 ├── pytest.ini
 ├── requirements.txt              # runtime only — what the deployment installs

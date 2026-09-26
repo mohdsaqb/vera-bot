@@ -23,6 +23,34 @@ from services.context_store import ContextStore
 from services.suppression import SuppressionLedger
 from state import get_context_store, get_suppression_ledger, reset_state
 
+# Variables that change how the code behaves rather than what it says. A developer
+# with a real `.env` — which anyone who has deployed will have — would otherwise be
+# running a different suite from CI: `build_writer()` would return an LLMWriter, and
+# the reasoning defaults would already be populated. Tests that want a provider
+# configure one explicitly by constructing `Settings(...)`.
+BEHAVIOURAL_ENV_VARS = (
+    "LLM_PROVIDER", "LLM_MODEL", "LLM_TEMPERATURE", "LLM_TIMEOUT_SECONDS",
+    "LLM_MAX_TOKENS", "LLM_STRUCTURED_METHOD", "LLM_REASONING_EFFORT",
+    "LLM_REASONING_FORMAT", "LLM_MAX_CALLS_PER_TICK", "LLM_TICK_BUDGET_SECONDS",
+    "GROQ_API_KEY",
+)
+
+
+@pytest.fixture(autouse=True)
+def neutral_environment(monkeypatch: pytest.MonkeyPatch) -> Iterator[None]:
+    """Run every test against the code's own defaults, not the developer's `.env`.
+
+    Cleared before and after, with the settings cache invalidated either side so a
+    value read during one test cannot persist into the next.
+    """
+    from config import get_settings
+
+    for name in BEHAVIOURAL_ENV_VARS:
+        monkeypatch.delenv(name, raising=False)
+    get_settings.cache_clear()
+    yield
+    get_settings.cache_clear()
+
 
 @pytest.fixture(autouse=True)
 def clean_state() -> Iterator[None]:

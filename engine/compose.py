@@ -112,10 +112,18 @@ def build_plan(
         if audience == "customer" and customer is not None
         else render.language_for_merchant(merchant)
     )
+    # A message anchored entirely on category-level facts has nothing in it that is
+    # specific to this business beyond the owner's name; the locality fills that gap.
+    anchored_on_merchant = any(
+        "merchant." in fact.source or "customer." in fact.source
+        for fact in (primary, supporting) if fact
+    )
     salutation = (
         render.customer_salutation(customer, merchant, language)
         if audience == "customer" and customer is not None
-        else render.merchant_salutation(category, merchant)
+        else render.merchant_salutation(
+            category, merchant, with_locality=not anchored_on_merchant
+        )
     )
 
     citations = tuple(
@@ -301,7 +309,7 @@ def compose(
         )
 
     brief = brief_for_plan(plan, norm_category, norm_merchant, norm_customer)
-    _, params = render.render_body(plan, norm_category, norm_merchant, norm_customer)
+    _, params = render.render_body(plan, norm_category, norm_customer)
     body, body_source = write_body(brief, writer)
     problems = render.validate_body(body, plan)
     if problems:
