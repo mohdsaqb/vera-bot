@@ -96,7 +96,13 @@ class RetryOnThrottle(urllib.request.BaseHandler):
             delay = float(retry_after) if retry_after else BASE_BACKOFF_SECONDS * (2**attempt)
         except (TypeError, ValueError):
             delay = BASE_BACKOFF_SECONDS * (2**attempt)
-        delay = min(delay, 15.0)
+        # 429 = the per-minute token bucket is drained; nothing short of a
+        # full refill cycle helps, and capping at 15s just burns attempts.
+        # 5xx = provider capacity, which clears in seconds.
+        ceiling = 60.0 if code == 429 else 15.0
+        if code == 429 and not retry_after:
+            delay = 60.0
+        delay = min(delay, ceiling)
         print(f"    [retry] HTTP {code}; waiting {delay:.0f}s "
               f"(attempt {attempt + 1}/{MAX_RETRIES})")
         fp.close()
@@ -119,10 +125,13 @@ _PACED_HOSTS = (
     "groq.com", "openai.com", "generativelanguage.googleapis.com",
     "api.anthropic.com", "deepseek.com", "openrouter.ai",
 )  # Ollama runs locally and needs no pacing.
-# 8,000 tokens/min is the free-tier ceiling and a scoring call costs roughly
-# 1,500-2,000, so ~4 calls a minute is the sustainable rate. Override with
-# JUDGE_MIN_INTERVAL=3 when the scorer runs on a provider with room to spare.
-MIN_INTERVAL_SECONDS = float(os.environ.get("JUDGE_MIN_INTERVAL", "14"))
+# The bot and the scorer share one 8,000 tokens/min key: the bot spends ~1,100
+# per wording call and takes up to six per tick, while a scoring call needs
+# ~1,800. At any tighter spacing the two compete for the same bucket and the
+# scorer loses, falling through to _fallback_score() — whose placeholder 5/10s
+# are indistinguishable from real ones. A full minute lets the bucket refill.
+# Override with JUDGE_MIN_INTERVAL=3 once the scorer has a key of its own.
+MIN_INTERVAL_SECONDS = float(os.environ.get("JUDGE_MIN_INTERVAL", "60"))
 _last_request_at = 0.0
 
 
