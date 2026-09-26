@@ -187,6 +187,33 @@ async def handle_validation_error(
 
 
 # --------------------------------------------------------------------------- #
+# GET / — signpost only
+# --------------------------------------------------------------------------- #
+@app.get("/", include_in_schema=False)
+async def root() -> dict[str, object]:
+    """Name the service and list its endpoints.
+
+    The contract defines nothing at the root, and the judge appends each path to
+    the base URL, so nothing depends on this. It exists because the submitted
+    link IS the base URL: a person who opens it in a browser would otherwise get
+    a bare 404 and reasonably conclude the deployment was broken. No state is
+    touched and no secret is read.
+    """
+    return {
+        "service": "vera",
+        "status": "ok",
+        "endpoints": [
+            "GET  /v1/healthz",
+            "GET  /v1/metadata",
+            "POST /v1/context",
+            "POST /v1/tick",
+            "POST /v1/reply",
+            "POST /v1/teardown",
+        ],
+    }
+
+
+# --------------------------------------------------------------------------- #
 # GET /v1/healthz
 # --------------------------------------------------------------------------- #
 @app.get("/v1/healthz", response_model=HealthResponse)

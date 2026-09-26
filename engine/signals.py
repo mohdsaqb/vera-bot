@@ -1016,11 +1016,13 @@ _FALLBACK_CHAIN: dict[str, tuple[str, ...]] = {
     # to me" is a fact about Vera's own inbox, not about the merchant's business,
     # so it justifies the timing but anchors nothing the merchant can act on;
     # it still reaches the message as the supporting "why now".
-    # The peer benchmark leads rather than the subscription state: a merchant who
-    # has gone quiet is usually one we last spoke to about their lapsed plan, and
-    # leading on the plan again restates a story they have already been told. The
-    # peer gap is the fact they have not heard.
-    "reengagement": ("peer_gap", "delta", "dormancy"),
+    # Re-engagement is about the customers going quiet, not the click rate — the
+    # same principle SUPPORTING_FACT_ORDER states for this family. Leading on the
+    # subscription state was tried and rejected: the merchant's winback trigger
+    # already tells the lapsed-plan story, so it produced two near-identical
+    # messages. A peer click-through benchmark was tried too, and reads as funnel
+    # analytics in a warm_practical category.
+    "reengagement": ("customer_base", "delta", "peer_gap", "dormancy"),
     "curiosity": ("delta", "peer_gap", "review_pos", "customer_base"),
     "account": ("subscription", "delta"),
     "reputation": ("review_neg",),

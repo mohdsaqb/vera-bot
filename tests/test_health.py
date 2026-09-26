@@ -54,3 +54,22 @@ def test_healthz_is_json_and_fast_without_any_dependency(client):
 
     assert response.headers["content-type"].startswith("application/json")
     assert set(response.json()) == {"status", "uptime_seconds", "contexts_loaded"}
+
+
+def test_root_is_a_signpost_not_a_404():
+    """The submitted link is the base URL, so opening it must not look broken."""
+    from fastapi.testclient import TestClient
+
+    from app import app
+
+    with TestClient(app) as client:
+        response = client.get("/")
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["service"] == "vera"
+    # Every documented endpoint is listed, so the page is self-describing.
+    listed = " ".join(payload["endpoints"])
+    for path in ("/v1/healthz", "/v1/metadata", "/v1/context",
+                 "/v1/tick", "/v1/reply", "/v1/teardown"):
+        assert path in listed

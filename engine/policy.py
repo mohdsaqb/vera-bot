@@ -434,8 +434,8 @@ AGGREGATE_FACTS_BY_CATEGORY: Final[dict[str, tuple[tuple[str, str, str], ...]]] 
         ("repeat_customer_pct", "{value} of your covers are repeat", "rate"),
     ),
     "salons": (
-        ("retention_3mo_pct", "3-month retention is {value}", "rate"),
         ("lapsed_90d_plus", "{value} clients have not been in for 90 days", "count"),
+        ("retention_3mo_pct", "3-month retention is {value}", "rate"),
         ("total_unique_ytd", "you have seen {value} clients this year", "count"),
     ),
     "pharmacies": (

@@ -52,7 +52,10 @@ USER_AGENT = (
 # evaluation — same request, same key, same payload, same scoring prompt, just not
 # abandoned on the first refusal.
 RETRY_STATUSES = frozenset({429, 500, 502, 503, 504})
-MAX_RETRIES = 5
+# 503 from a hosted scorer is provider capacity, not a quota problem, and it
+# clears on its own — so be patient rather than falling through to
+# _fallback_score(), whose placeholder 5/10s look like real scores.
+MAX_RETRIES = 6
 BASE_BACKOFF_SECONDS = 4.0
 
 SCENARIOS = (
@@ -93,7 +96,7 @@ class RetryOnThrottle(urllib.request.BaseHandler):
             delay = float(retry_after) if retry_after else BASE_BACKOFF_SECONDS * (2**attempt)
         except (TypeError, ValueError):
             delay = BASE_BACKOFF_SECONDS * (2**attempt)
-        delay = min(delay, 60.0)
+        delay = min(delay, 15.0)
         print(f"    [retry] HTTP {code}; waiting {delay:.0f}s "
               f"(attempt {attempt + 1}/{MAX_RETRIES})")
         fp.close()
@@ -112,7 +115,14 @@ class RetryOnThrottle(urllib.request.BaseHandler):
 # exhausted retry still lands in the simulator's _fallback_score() — which
 # reports 5/10 "Could not evaluate" and is easy to mistake for a real mediocre
 # score. Pacing keeps a run under the per-minute limit.
-MIN_INTERVAL_SECONDS = 3.0
+_PACED_HOSTS = (
+    "groq.com", "openai.com", "generativelanguage.googleapis.com",
+    "api.anthropic.com", "deepseek.com", "openrouter.ai",
+)  # Ollama runs locally and needs no pacing.
+# 8,000 tokens/min is the free-tier ceiling and a scoring call costs roughly
+# 1,500-2,000, so ~4 calls a minute is the sustainable rate. Override with
+# JUDGE_MIN_INTERVAL=3 when the scorer runs on a provider with room to spare.
+MIN_INTERVAL_SECONDS = float(os.environ.get("JUDGE_MIN_INTERVAL", "14"))
 _last_request_at = 0.0
 
 
@@ -124,7 +134,7 @@ class PaceRequests(urllib.request.BaseHandler):
     def default_open(self, req):
         global _last_request_at
         host = req.host or ""
-        if "groq.com" in host or "openai.com" in host:
+        if any(h in host for h in _PACED_HOSTS):
             wait = MIN_INTERVAL_SECONDS - (time.monotonic() - _last_request_at)
             if wait > 0:
                 time.sleep(wait)
