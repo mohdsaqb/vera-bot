@@ -1,0 +1,33 @@
+# Environment / secrets — never commit a real key
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+credentials.json
+service-account*.json
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+
+# Tooling
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# Local artefacts
+*.log
+.idea/
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db

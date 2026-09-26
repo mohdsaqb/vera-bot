@@ -1,0 +1,6 @@
+# Test tooling. Not installed on the deployment.
+-r requirements.txt
+
+pytest==8.4.2
+# Backs FastAPI's TestClient.
+httpx==0.28.1
