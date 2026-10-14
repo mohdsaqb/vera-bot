@@ -13,9 +13,11 @@ name: keep-warm
 
 on:
   schedule:
-    # Every 5 minutes: the shortest interval GitHub accepts, chosen so that a
-    # delayed run still lands inside the ~15 minute idle window.
-    - cron: "*/5 * * * *"
+    # Hourly, off the top of the hour when GitHub's runners are busiest. This
+    # no longer holds the instance awake between pings (Render idles it after
+    # ~15 minutes), which keeps it from using up the free instance-hours; it
+    # remains a periodic check that the bot still answers.
+    - cron: "17 * * * *"
   workflow_dispatch:      # so it can also be run by hand from the Actions tab
 
 permissions:
